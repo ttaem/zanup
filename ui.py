@@ -7,10 +7,11 @@ import pandas as pd
 
 
 def insert_row():
-    date = calendar.selection_get()
-    print(date)
-    print (calendar.get_date())
-    date_var.set(date)
+    global df
+    df = df.append(pd.Series([date_var.get(), week_var.get(), start_var.get(), end_var.get(), rate_var.get(), desc_text.get("1.0", tk.END)], index=df.columns), ignore_index=True)
+    print(df)
+
+
 
 def cal_call(eventObject):
     date = calendar.selection_get()
@@ -19,6 +20,7 @@ def cal_call(eventObject):
     print (date.strftime('%a'))
     print(eventObject)
     date_var.set(date)
+    week_var.set(date.strftime('%a'))
 
 master = tk.Tk()
 
@@ -71,9 +73,12 @@ end_pop.grid(row=0, column=4)
 
 #end_label = tk.Label(insert_pane, text="22:00")
 #end_label.grid(row=0, column=2)
-level_label = tk.Label(insert_pane, text="A")
+rate_var = tk.StringVar(insert_pane)
+rate_var.set('A')
+rate_label = tk.Label(insert_pane, textvariable=rate_var)
 #level_label.grid(row=0, column=3, sticky="E")
-level_label.grid(row=0, column=5, padx=10)
+rate_label.grid(row=0, column=5, padx=10)
+desc_var = tk.StringVar(insert_pane)
 desc_text = tk.Text(insert_pane, height=2, width=50)
 desc_text.grid(row=1, columnspan=6, sticky='WE')
 
