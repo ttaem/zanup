@@ -5,6 +5,33 @@ from tkcalendar import Calendar, DateEntry
 import datetime
 import pandas as pd
 
+import openpyxl as xl
+from openpyxl.styles import Border, Side
+
+
+def generate_xl():
+    thin_border = Border(left=Side(style='thin'),
+                         right=Side(style='thin'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='thin'))
+
+
+    
+    df_count = df.shape[0]
+    sheet.insert_rows(7, amount=df_count)
+    sheet["C30"].border=thin_border 
+
+    for index, df_row in df.iterrows():
+        sheet["E"+str(index+7)] = df_row['date']
+        sheet["F"+str(index+7)] = df_row['week']
+        sheet["G"+str(index+7)] = df_row['start']
+        sheet["H"+str(index+7)] = df_row['end']
+        sheet["I"+str(index+7)] = ""
+        sheet["J"+str(index+7)] = df_row['rate']
+        sheet["K"+str(index+7)] = ""
+        sheet["L"+str(index+7)] = df_row['desc']
+
+    book.save("result.xlsx")
 
 def insert_row():
     global df
@@ -94,7 +121,7 @@ desc_text.grid(row=1, columnspan=6, sticky='WE')
 
 insert_button = tk.Button(upper_pane, text='Insert', width=30, command=insert_row)
 delete_button = tk.Button(upper_pane, text='Delete', width=30, command=master.destroy)
-done_button = tk.Button(upper_pane, text='Generate', width=30, command=master.destroy)
+done_button = tk.Button(upper_pane, text='Generate', width=30, command=generate_xl)
 save_button = tk.Button(upper_pane, text='Save', width=30, command=master.destroy)
 
 insert_button.pack(fill=tk.X)
@@ -135,6 +162,10 @@ for row in df.itertuples(index=True, name='Pandas'):
     treeview.insert('','end', text=row[0], values=row[1:])
 
 #treeview.insert('','end', text='1', values=('2019-7-02', 'Sun', '09:00', '22:00', 'hahaha'))
+
+filename = "sample.xlsx"
+book = xl.load_workbook(filename)
+sheet = book.worksheets[0]
 
 tk.mainloop()
 
