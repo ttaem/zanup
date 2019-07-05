@@ -8,8 +8,17 @@ import pandas as pd
 
 def insert_row():
     global df
-    df = df.append(pd.Series([date_var.get(), week_var.get(), start_var.get(), end_var.get(), rate_var.get(), desc_text.get("1.0", tk.END)], index=df.columns), ignore_index=True)
+    df = df.append(pd.Series([date_var.get(), week_var.get(), start_var.get()+":00", end_var.get()+":00", rate_var.get(), desc_text.get("1.0", tk.END)], index=df.columns), ignore_index=True)
     print(df)
+    df = df.sort_values(by="date")
+    print(df)
+    df = df.reset_index(drop=True)
+    print(df)
+
+    for i in treeview.get_children():
+        treeview.delete(i)
+    for row in df.itertuples(index=True, name='Pandas'):
+        treeview.insert('','end', text=row[0], values=row[1:])
 
 
 
@@ -118,6 +127,8 @@ treeview.heading("Rate", text="Rate")
 treeview.column("#6", width=300, anchor="center")
 treeview.heading("Description", text="Description")
 treeview.pack(fill=tk.BOTH)
+
+ttk.Style().configure('Treeview',rowheight=30)
 
 df = pd.read_csv("sample.csv")
 for row in df.itertuples(index=True, name='Pandas'):
