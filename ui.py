@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkcalendar import Calendar, DateEntry
+from tkinter import messagebox as msg
 
 import datetime
 import pandas as pd
@@ -72,6 +73,14 @@ def generate_xl():
 
 def insert_row():
     global df
+
+    for index, df_row in df.iterrows():
+        print(date_var.get())
+        print(df_row['date'])
+        if date_var.get() == df_row['date']:
+            msg.showerror("New Entry Insertion", "Duplicated Date Detected!!!")
+            return
+
     df = df.append(pd.Series([date_var.get(), week_var.get(), start_var.get()+":00", end_var.get()+":00", rate_var.get(), desc_text.get("1.0", 'end-1c')], index=df.columns), ignore_index=True)
     print(df)
     df = df.sort_values(by="date")
@@ -170,7 +179,7 @@ rate_label = tk.Label(insert_pane, textvariable=rate_var)
 rate_label.grid(row=0, column=5, padx=10)
 desc_var = tk.StringVar(insert_pane)
 desc_text = tk.Text(insert_pane, height=2, width=50)
-desc_text.grid(row=1, columnspan=6, sticky='W')
+desc_text.grid(row=1, columnspan=6, sticky='WE')
 
 
 insert_button = tk.Button(upper_pane, text='Insert', width=30, command=insert_row)
@@ -187,25 +196,25 @@ treeview=ttk.Treeview(bottom_pane,
         columns=["Date", "Week", "Start", "End", "Rate", "Description"],
         displaycolumns=["Date", "Week", "Start", "End", "Rate", "Description"])
 
-treeview.column("#0", width=30, anchor="center")
+treeview.column("#0", width=30, minwidth=30, stretch=False, anchor="center")
 treeview.heading("#0", text="#")
 
-treeview.column("#1", width=100, anchor="center")
+treeview.column("#1", width=100, minwidth=100, stretch=False, anchor="center")
 treeview.heading("Date", text="Date")
 
-treeview.column("#2", width=50, anchor="center")
+treeview.column("#2", width=50, minwidth=50, stretch=False, anchor="center")
 treeview.heading("Week", text="Week")
 
-treeview.column("#3", width=50, anchor="center")
+treeview.column("#3", width=50, minwidth=50, stretch=False, anchor="center")
 treeview.heading("Start", text="Start")
 
-treeview.column("#4", width=50, anchor="center")
+treeview.column("#4", width=50, minwidth=50, stretch=False, anchor="center")
 treeview.heading("End", text="End")
 
-treeview.column("#5", width=30, anchor="center")
+treeview.column("#5", width=50, minwidth=50, stretch=False, anchor="center")
 treeview.heading("Rate", text="Rate")
 
-treeview.column("#6", width=300, anchor="center")
+treeview.column("#6", width=300, anchor="w")
 treeview.heading("Description", text="Description")
 treeview.pack(fill=tk.BOTH)
 
