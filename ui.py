@@ -239,7 +239,7 @@ treeview.heading("Rate", text="Rate")
 
 treeview.column("#6", width=300, anchor="w")
 treeview.heading("Description", text="Description")
-treeview.pack(side='left', fill=tk.BOTH)
+treeview.pack(side='left', fill=tk.BOTH, expand=tk.YES)
 
 ttk.Style().configure('Treeview',rowheight=30)
 
@@ -250,7 +250,8 @@ for row in df.itertuples(index=True, name='Pandas'):
 #treeview.insert('','end', text='1', values=('2019-7-02', 'Sun', '09:00', '22:00', 'hahaha'))
 
 vsb = ttk.Scrollbar(bottom_pane, orient="vertical", command=treeview.yview)
-vsb.pack(side='right', fill='y')
+#vsb.pack(side='right', fill='y')
+vsb.pack(side='right', fill=tk.BOTH)
 treeview.configure(yscrollcommand=vsb.set)
 
 
