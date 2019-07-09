@@ -7,7 +7,7 @@ import datetime
 import pandas as pd
 
 import openpyxl as xl
-from openpyxl.styles import Border, Side
+from openpyxl.styles import Border, Side, Alignment
 
 name = "Lee Changkeel"
 position = "Senior"
@@ -34,11 +34,22 @@ def generate_xl():
                          right=Side(style='medium'),
                          top=Side(style='thin'),
                          bottom=Side(style='thin'))
+    bottom_left_border = Border(left=Side(style='medium'),
+                         right=Side(style='thin'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='medium'))
+    bottom_right_border = Border(left=Side(style='thin'),
+                         right=Side(style='medium'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='medium'))
+
+
+    desc_align = Alignment(wrap_text=True, shrink_to_fit=True)
 
     
     df_count = df.shape[0]
     sheet.insert_rows(7, amount=df_count)
-    sheet["C30"].border=thin_border 
+    #sheet["C30"].border=thin_border 
     print("insert " + str(df_count))
 
     for index, df_row in df.iterrows():
@@ -66,6 +77,13 @@ def generate_xl():
         sheet["J"+str(index+7)].border = thin_border
         sheet["K"+str(index+7)].border = thin_border
         sheet["L"+str(index+7)].border = right_border
+        sheet["L"+str(index+7)].alignment = desc_align
+
+        rd = sheet.row_dimensions[index+7]
+        rd.height = 30
+
+    sheet["B"+str(index+7)].border = bottom_left_border
+    sheet["L"+str(index+7)].border = bottom_right_border
 
     sheet["K"+str(index+7+1)] = "=SUM(K7:K" + str(index+7) + ")"
     sheet["K"+str(index+7+2)] = "=SUM(K" + str(index+7+1) + ")"
@@ -92,6 +110,11 @@ def insert_row():
         treeview.delete(i)
     for row in df.itertuples(index=True, name='Pandas'):
         treeview.insert('','end', text=row[0], values=row[1:])
+
+    #child_id = treeview.get_children()[-1]
+    #treeview.focus(child_id)
+    #treeview.selection_set(child_id)
+    treeview.yview_moveto(1)
 
 def delete_row():
     global df
@@ -129,7 +152,7 @@ bottom_pane =  tk.LabelFrame(master, text='List of workday')
 insert_pane = tk.LabelFrame(upper_pane, text='New Entry')
 
 upper_pane.pack(side=tk.TOP, fill=tk.BOTH)
-bottom_pane.pack(side=tk.TOP, fill=tk.BOTH)
+bottom_pane.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
 
 calendar = Calendar(upper_pane, font="Arial 14", firstweekday='sunday')
 calendar.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
@@ -196,7 +219,7 @@ treeview=ttk.Treeview(bottom_pane,
         columns=["Date", "Week", "Start", "End", "Rate", "Description"],
         displaycolumns=["Date", "Week", "Start", "End", "Rate", "Description"])
 
-treeview.column("#0", width=30, minwidth=30, stretch=False, anchor="center")
+treeview.column("#0", width=50, minwidth=50, stretch=False, anchor="w")
 treeview.heading("#0", text="#")
 
 treeview.column("#1", width=100, minwidth=100, stretch=False, anchor="center")
@@ -216,7 +239,7 @@ treeview.heading("Rate", text="Rate")
 
 treeview.column("#6", width=300, anchor="w")
 treeview.heading("Description", text="Description")
-treeview.pack(fill=tk.BOTH)
+treeview.pack(side='left', fill=tk.BOTH)
 
 ttk.Style().configure('Treeview',rowheight=30)
 
@@ -225,6 +248,11 @@ for row in df.itertuples(index=True, name='Pandas'):
     treeview.insert('','end', text=row[0], values=row[1:])
 
 #treeview.insert('','end', text='1', values=('2019-7-02', 'Sun', '09:00', '22:00', 'hahaha'))
+
+vsb = ttk.Scrollbar(bottom_pane, orient="vertical", command=treeview.yview)
+vsb.pack(side='right', fill='y')
+treeview.configure(yscrollcommand=vsb.set)
+
 
 filename = "sample.xlsx"
 book = xl.load_workbook(filename)
