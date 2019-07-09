@@ -144,7 +144,33 @@ def cal_call(eventObject):
     date_var.set(date)
     week_var.set(date.strftime('%a'))
 
+def exit_():
+    master.quit()
+    master.destroy()
+
 master = tk.Tk()
+master.title("ZanUp")
+
+menu_bar = tk.Menu(master, relief="flat")
+
+file_menu = tk.Menu(menu_bar, tearoff=0)
+file_menu.add_command(label="Open")
+file_menu.add_command(label="Save")
+file_menu.add_command(label="Generation")
+file_menu.add_separator()
+file_menu.add_command(label="Exit", command=exit_)
+menu_bar.add_cascade(label="File", menu=file_menu)
+
+setting_menu = tk.Menu(menu_bar, tearoff=0)
+setting_menu.add_command(label="Preference")
+menu_bar.add_cascade(label="Setting", menu=setting_menu)
+
+help_menu = tk.Menu(menu_bar, tearoff=0)
+help_menu.add_command(label="Help")
+help_menu.add_command(label="About")
+menu_bar.add_cascade(label="Help", menu=help_menu)
+
+master.config(menu=menu_bar)
 
 upper_pane = tk.PanedWindow(master)
 #bottom_pane =  tk.PanedWindow(master)
