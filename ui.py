@@ -8,6 +8,15 @@ import pandas as pd
 import openpyxl as xl
 from openpyxl.styles import Border, Side
 
+name = "Lee Changkeel"
+position = "Senior"
+department = "1sil"
+
+
+def save_df():
+    print("save")
+    df.to_csv("sample.csv", index=False)
+
 
 def generate_xl():
     thin_border = Border(left=Side(style='thin'),
@@ -15,29 +24,74 @@ def generate_xl():
                          top=Side(style='thin'),
                          bottom=Side(style='thin'))
 
+    left_border = Border(left=Side(style='medium'),
+                         right=Side(style='thin'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='thin'))
+
+    right_border = Border(left=Side(style='thin'),
+                         right=Side(style='medium'),
+                         top=Side(style='thin'),
+                         bottom=Side(style='thin'))
 
     
     df_count = df.shape[0]
     sheet.insert_rows(7, amount=df_count)
     sheet["C30"].border=thin_border 
+    print("insert " + str(df_count))
 
     for index, df_row in df.iterrows():
+        sheet["B"+str(index+7)] = name
+        sheet["C"+str(index+7)] = position
+        sheet["D"+str(index+7)] = department
         sheet["E"+str(index+7)] = df_row['date']
         sheet["F"+str(index+7)] = df_row['week']
         sheet["G"+str(index+7)] = df_row['start']
         sheet["H"+str(index+7)] = df_row['end']
         sheet["I"+str(index+7)] = ""
         sheet["J"+str(index+7)] = df_row['rate']
-        sheet["K"+str(index+7)] = ""
+        sheet["K"+str(index+7)] = "=IF(J"+str(index+7)+"=\"A\",15000,IF(J"+str(index+7)+"=\"B\",20000,IF(J"+str(index+7)+"=\"C\",30000,IF(J"+str(index+7)+"=\"D\",40000,''))))"
         sheet["L"+str(index+7)] = df_row['desc']
 
+    for index, df_row in df.iterrows():
+        sheet["B"+str(index+7)].border = left_border
+        sheet["C"+str(index+7)].border = thin_border
+        sheet["D"+str(index+7)].border = thin_border
+        sheet["E"+str(index+7)].border = thin_border
+        sheet["F"+str(index+7)].border = thin_border
+        sheet["G"+str(index+7)].border = thin_border
+        sheet["H"+str(index+7)].border = thin_border
+        sheet["I"+str(index+7)].border = thin_border
+        sheet["J"+str(index+7)].border = thin_border
+        sheet["K"+str(index+7)].border = thin_border
+        sheet["L"+str(index+7)].border = right_border
+
+    sheet["K"+str(index+7+1)] = "=SUM(K7:K" + str(index+7) + ")"
+    sheet["K"+str(index+7+2)] = "=SUM(K" + str(index+7+1) + ")"
     book.save("result.xlsx")
 
 def insert_row():
     global df
-    df = df.append(pd.Series([date_var.get(), week_var.get(), start_var.get()+":00", end_var.get()+":00", rate_var.get(), desc_text.get("1.0", tk.END)], index=df.columns), ignore_index=True)
+    df = df.append(pd.Series([date_var.get(), week_var.get(), start_var.get()+":00", end_var.get()+":00", rate_var.get(), desc_text.get("1.0", 'end-1c')], index=df.columns), ignore_index=True)
     print(df)
     df = df.sort_values(by="date")
+    print(df)
+    df = df.reset_index(drop=True)
+    print(df)
+
+    for i in treeview.get_children():
+        treeview.delete(i)
+    for row in df.itertuples(index=True, name='Pandas'):
+        treeview.insert('','end', text=row[0], values=row[1:])
+
+def delete_row():
+    global df
+    cur = treeview.focus()
+    index = treeview.index(cur)
+    print(cur)
+    print(index)
+    print(df)
+    df = df.drop(df.index[index])
     print(df)
     df = df.reset_index(drop=True)
     print(df)
@@ -82,12 +136,12 @@ insert_pane.grid_columnconfigure(3, weight=1)
 insert_pane.grid_columnconfigure(4, weight=1)
 
 date_var = tk.StringVar(insert_pane)
-date_var.set("Select from calendar")
+date_var.set(calendar.selection_get())
 date_label = tk.Label(insert_pane, textvariable=date_var)
 date_label.grid(row=0, column=0, sticky='W', padx=10)
 
 week_var = tk.StringVar(insert_pane)
-#week_var.set("2019-07-03")
+week_var.set(calendar.selection_get().strftime('%a'))
 week_label = tk.Label(insert_pane, textvariable=week_var)
 week_label.grid(row=0, column=1, sticky='W')
 #start_label = tk.Label(insert_pane, text="09:00")
@@ -116,13 +170,13 @@ rate_label = tk.Label(insert_pane, textvariable=rate_var)
 rate_label.grid(row=0, column=5, padx=10)
 desc_var = tk.StringVar(insert_pane)
 desc_text = tk.Text(insert_pane, height=2, width=50)
-desc_text.grid(row=1, columnspan=6, sticky='WE')
+desc_text.grid(row=1, columnspan=6, sticky='W')
 
 
 insert_button = tk.Button(upper_pane, text='Insert', width=30, command=insert_row)
-delete_button = tk.Button(upper_pane, text='Delete', width=30, command=master.destroy)
+delete_button = tk.Button(upper_pane, text='Delete', width=30, command=delete_row)
 done_button = tk.Button(upper_pane, text='Generate', width=30, command=generate_xl)
-save_button = tk.Button(upper_pane, text='Save', width=30, command=master.destroy)
+save_button = tk.Button(upper_pane, text='Save', width=30, command=save_df)
 
 insert_button.pack(fill=tk.X)
 delete_button.pack(fill=tk.X)
