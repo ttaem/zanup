@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkcalendar import Calendar, DateEntry
 from tkinter import messagebox as msg
+from tkinter import filedialog
 
 import datetime
 import pandas as pd
@@ -148,13 +149,17 @@ def exit_():
     master.quit()
     master.destroy()
 
+def file_open():
+    filename = filedialog.askopenfilename(initialdir=".", title="Select file", filetypes=(("cvs files", "*.csv"), ("all files", "*.*")))
+    print(filename)
+
 master = tk.Tk()
 master.title("ZanUp")
 
 menu_bar = tk.Menu(master, relief="flat")
 
 file_menu = tk.Menu(menu_bar, tearoff=0)
-file_menu.add_command(label="Open")
+file_menu.add_command(label="Open", command=file_open)
 file_menu.add_command(label="Save")
 file_menu.add_command(label="Generation")
 file_menu.add_separator()
