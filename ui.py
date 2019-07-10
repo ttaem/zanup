@@ -34,36 +34,46 @@ def create_pref_window():
     user_info_pane.pack(side=tk.TOP, fill=tk.X)
     etc_info_pane.pack()
 
+    gen_var = tk.StringVar(file_info_pane)
+    gen_var.set(g_config['FILE']['GenerationFilePath'])
     gen_label = tk.Label(file_info_pane, text="Generation File Path:")
     gen_label.grid(column=0, row=0, sticky='W')
-    gen_entry = tk.Entry(file_info_pane)
+    gen_entry = tk.Entry(file_info_pane, textvariable=gen_var)
     gen_entry.grid(column=0, row=1, sticky='WE')
-    gen_button = tk.Button(file_info_pane, text="Change")
+    gen_button = tk.Button(file_info_pane, text="Change", command=lambda: directory_select(gen_var))
     gen_button.grid(column=1, row=1, sticky='WE')
     gen_separator = ttk.Separator(file_info_pane, orient='horizontal')
     gen_separator.grid(row=2,columnspan=2, stick='WE')
     file_info_pane.grid_columnconfigure(0, weight=1)
 
+    save_var = tk.StringVar(file_info_pane)
+    save_var.set(g_config['FILE']['SaveFilePath'])
     save_label = tk.Label(file_info_pane, text="Save File Path:")
     save_label.grid(column=0, row=3, sticky='W')
-    save_entry = tk.Entry(file_info_pane)
+    save_entry = tk.Entry(file_info_pane, textvariable=save_var)
     save_entry .grid(column=0, row=4, sticky='WE')
-    save_button = tk.Button(file_info_pane, text="Change")
+    save_button = tk.Button(file_info_pane, text="Change", command=lambda: directory_select(save_var))
     save_button.grid(column=1, row=4, sticky='E')
 
+    name_var = tk.StringVar(user_info_pane)
+    name_var.set(g_config['USER']['Name'])
     name_label = tk.Label(user_info_pane, text="Name:")
     name_label.grid(column=0, row=0, sticky='WE')
-    name_entry = tk.Entry(user_info_pane)
+    name_entry = tk.Entry(user_info_pane, textvariable=name_var)
     name_entry.grid(column=1, row=0, sticky='WE')
 
+    pos_var = tk.StringVar(user_info_pane)
+    pos_var.set(g_config['USER']['Position'])
     pos_label = tk.Label(user_info_pane, text="Position:")
     pos_label.grid(column=0, row=1, sticky='WE')
-    pos_entry = tk.Entry(user_info_pane)
+    pos_entry = tk.Entry(user_info_pane, textvariable=pos_var)
     pos_entry.grid(column=1, row=1, sticky='WE')
 
+    depart_var = tk.StringVar(user_info_pane)
+    depart_var.set(g_config['USER']['Department'])
     depart_label = tk.Label(user_info_pane, text="Department:")
     depart_label.grid(column=0, row=2, sticky='WE')
-    depart_entry = tk.Entry(user_info_pane)
+    depart_entry = tk.Entry(user_info_pane, textvariable=depart_var)
     depart_entry.grid(column=1, row=2, sticky='WE')
 
     user_info_pane.grid_columnconfigure(1, weight=1)
@@ -72,11 +82,13 @@ def do_default_config():
     my_file = Path("./config.ini")
     if my_file.is_file():
         print("config file already exist")
+        g_config.read("./config.ini")
     else:
         print("config file not exist")
         #config = configparser.ConfigParser()
-        g_config['DEFAULT'] = {'GenerationPath': '/home/cklee',
-                             'Name': 'Lee Changkeel',
+        g_config['FILE'] = {'GenerationFilePath': '/home/cklee',
+                             'SaveFilePath': '/home/cklee'}
+        g_config['USER'] = {'Name': 'Lee Changkeel',
                              'Position': 'Senior',
                              'Department': '1sil'}
         with open('config.ini', 'w') as configfile:
@@ -220,6 +232,11 @@ def exit_():
 def file_open():
     filename = filedialog.askopenfilename(initialdir=".", title="Select file", filetypes=(("cvs files", "*.csv"), ("all files", "*.*")))
     print(filename)
+
+def directory_select(var):
+    path = filedialog.askdirectory()
+    print(path)
+    var.set(path)
 
 master = tk.Tk()
 master.title("ZanUp")
