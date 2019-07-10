@@ -3,6 +3,8 @@ import tkinter.ttk as ttk
 from tkcalendar import Calendar, DateEntry
 from tkinter import messagebox as msg
 from tkinter import filedialog
+#import TkUtil
+#import TkUtil.Dialog
 
 import datetime
 import pandas as pd
@@ -10,9 +12,75 @@ import pandas as pd
 import openpyxl as xl
 from openpyxl.styles import Border, Side, Alignment
 
+from pathlib import Path
+import configparser
+
 name = "Lee Changkeel"
 position = "Senior"
 department = "1sil"
+
+g_config = configparser.ConfigParser()
+
+def create_pref_window():
+    pref_win = tk.Toplevel(master)
+    #pref_win = TkUtil.Dialog(master)
+    pref_win.title("Preference")
+
+    file_info_pane = tk.LabelFrame(pref_win, text="File Info")
+    user_info_pane = tk.LabelFrame(pref_win, text="User Info")
+    etc_info_pane = tk.LabelFrame(pref_win, text="Etc Info")
+
+    file_info_pane.pack(side=tk.TOP, fill=tk.X)
+    user_info_pane.pack(side=tk.TOP, fill=tk.X)
+    etc_info_pane.pack()
+
+    gen_label = tk.Label(file_info_pane, text="Generation File Path:")
+    gen_label.grid(column=0, row=0, sticky='W')
+    gen_entry = tk.Entry(file_info_pane)
+    gen_entry.grid(column=0, row=1, sticky='WE')
+    gen_button = tk.Button(file_info_pane, text="Change")
+    gen_button.grid(column=1, row=1, sticky='WE')
+    gen_separator = ttk.Separator(file_info_pane, orient='horizontal')
+    gen_separator.grid(row=2,columnspan=2, stick='WE')
+    file_info_pane.grid_columnconfigure(0, weight=1)
+
+    save_label = tk.Label(file_info_pane, text="Save File Path:")
+    save_label.grid(column=0, row=3, sticky='W')
+    save_entry = tk.Entry(file_info_pane)
+    save_entry .grid(column=0, row=4, sticky='WE')
+    save_button = tk.Button(file_info_pane, text="Change")
+    save_button.grid(column=1, row=4, sticky='E')
+
+    name_label = tk.Label(user_info_pane, text="Name:")
+    name_label.grid(column=0, row=0, sticky='WE')
+    name_entry = tk.Entry(user_info_pane)
+    name_entry.grid(column=1, row=0, sticky='WE')
+
+    pos_label = tk.Label(user_info_pane, text="Position:")
+    pos_label.grid(column=0, row=1, sticky='WE')
+    pos_entry = tk.Entry(user_info_pane)
+    pos_entry.grid(column=1, row=1, sticky='WE')
+
+    depart_label = tk.Label(user_info_pane, text="Department:")
+    depart_label.grid(column=0, row=2, sticky='WE')
+    depart_entry = tk.Entry(user_info_pane)
+    depart_entry.grid(column=1, row=2, sticky='WE')
+
+    user_info_pane.grid_columnconfigure(1, weight=1)
+
+def do_default_config():
+    my_file = Path("./config.ini")
+    if my_file.is_file():
+        print("config file already exist")
+    else:
+        print("config file not exist")
+        #config = configparser.ConfigParser()
+        g_config['DEFAULT'] = {'GenerationPath': '/home/cklee',
+                             'Name': 'Lee Changkeel',
+                             'Position': 'Senior',
+                             'Department': '1sil'}
+        with open('config.ini', 'w') as configfile:
+            g_config.write(configfile)
 
 
 def save_df():
@@ -167,7 +235,7 @@ file_menu.add_command(label="Exit", command=exit_)
 menu_bar.add_cascade(label="File", menu=file_menu)
 
 setting_menu = tk.Menu(menu_bar, tearoff=0)
-setting_menu.add_command(label="Preference")
+setting_menu.add_command(label="Preference", command=create_pref_window)
 menu_bar.add_cascade(label="Setting", menu=setting_menu)
 
 help_menu = tk.Menu(menu_bar, tearoff=0)
@@ -289,6 +357,8 @@ treeview.configure(yscrollcommand=vsb.set)
 filename = "sample.xlsx"
 book = xl.load_workbook(filename)
 sheet = book.worksheets[0]
+
+do_default_config()
 
 tk.mainloop()
 
