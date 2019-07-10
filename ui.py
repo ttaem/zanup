@@ -21,6 +21,23 @@ department = "1sil"
 
 g_config = configparser.ConfigParser()
 
+def ok_pref(pref_win):
+    print("save...")
+    g_config['FILE']['GenerationFilePath'] = gen_var.get()
+    g_config['FILE']['SaveFilePath'] = save_var.get()
+    g_config['USER']['Name'] = name_var.get()
+    g_config['USER']['Position'] = pos_var.get()
+    g_config['USER']['Department'] = depart_var.get()
+    with open('config.ini', 'w') as configfile:
+        g_config.write(configfile)
+
+
+    pref_win.destroy()
+
+def cancel_pref(pref_win):
+    pref_win.destroy()
+    print("cancel...")
+
 def create_pref_window():
     pref_win = tk.Toplevel(master)
     #pref_win = TkUtil.Dialog(master)
@@ -33,6 +50,8 @@ def create_pref_window():
     file_info_pane.pack(side=tk.TOP, fill=tk.X)
     user_info_pane.pack(side=tk.TOP, fill=tk.X)
     etc_info_pane.pack()
+
+    global gen_var, save_var, name_var, pos_var, depart_var
 
     gen_var = tk.StringVar(file_info_pane)
     gen_var.set(g_config['FILE']['GenerationFilePath'])
@@ -77,6 +96,11 @@ def create_pref_window():
     depart_entry.grid(column=1, row=2, sticky='WE')
 
     user_info_pane.grid_columnconfigure(1, weight=1)
+
+    ok_button = tk.Button(pref_win, text="OK", command=lambda: ok_pref(pref_win))
+    cancel_button = tk.Button(pref_win, text="Cancel", command=lambda: cancel_pref(pref_win))
+    ok_button.pack(side=tk.TOP, fill=tk.X)
+    cancel_button.pack(side=tk.TOP, fill=tk.X)
 
 def do_default_config():
     my_file = Path("./config.ini")
