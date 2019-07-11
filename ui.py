@@ -40,8 +40,9 @@ def cancel_pref(pref_win):
 
 def create_pref_window():
     pref_win = tk.Toplevel(master)
-    #pref_win = TkUtil.Dialog(master)
     pref_win.title("Preference")
+    pref_win.transient(master)
+    pref_win.grab_set()
 
     file_info_pane = tk.LabelFrame(pref_win, text="File Info")
     user_info_pane = tk.LabelFrame(pref_win, text="User Info")
