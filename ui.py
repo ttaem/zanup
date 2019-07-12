@@ -32,6 +32,7 @@ def ok_pref(pref_win):
     g_config['USER']['Name'] = name_var.get()
     g_config['USER']['Position'] = pos_var.get()
     g_config['USER']['Department'] = depart_var.get()
+    g_config['ETC']['Language'] = lang_var.get()
     with open('config.ini', 'w') as configfile:
         g_config.write(configfile)
 
@@ -54,9 +55,9 @@ def create_pref_window():
 
     file_info_pane.pack(side=tk.TOP, fill=tk.X)
     user_info_pane.pack(side=tk.TOP, fill=tk.X)
-    etc_info_pane.pack()
+    etc_info_pane.pack(side=tk.TOP, fill=tk.X)
 
-    global gen_var, save_var, name_var, pos_var, depart_var
+    global gen_var, save_var, name_var, pos_var, depart_var, lang_var
 
     gen_var = tk.StringVar(file_info_pane)
     gen_var.set(g_config['FILE']['GenerationFilePath'])
@@ -102,6 +103,16 @@ def create_pref_window():
 
     user_info_pane.grid_columnconfigure(1, weight=1)
 
+    lang_var = tk.StringVar(etc_info_pane)
+    lang_var.set(g_config['ETC']['Language'])
+    lang_label = tk.Label(etc_info_pane, text="Language:")
+    lang_label.grid(column=0, row=0, sticky='WE')
+    lang_choices = {'ko_KR', 'C'}
+    lang_choices = sorted(lang_choices)
+    lang_pop = tk.OptionMenu(etc_info_pane, lang_var, *lang_choices)
+    lang_pop.grid(column=1, row=0, sticky='WE')
+
+
     ok_button = tk.Button(pref_win, text="OK", command=lambda: ok_pref(pref_win))
     cancel_button = tk.Button(pref_win, text="Cancel", command=lambda: cancel_pref(pref_win))
     ok_button.pack(side=tk.TOP, fill=tk.X)
@@ -120,6 +131,7 @@ def read_config():
         g_config['USER'] = {'Name': 'Hong gildong',
                              'Position': 'bastard',
                              'Department': 'Korea'}
+        g_config['ETC'] = {'Language': 'C'}
         with open('config.ini', 'w') as configfile:
             g_config.write(configfile)
 
