@@ -16,6 +16,8 @@ from openpyxl.styles import Border, Side, Alignment
 from pathlib import Path
 import configparser
 
+import gettext
+
 
 g_config = configparser.ConfigParser()
 
@@ -23,6 +25,7 @@ g_month = 1
 g_department = "1sil"
 g_name = "cklee"
 global df
+
 
 
 def ok_pref(pref_win):
@@ -49,9 +52,9 @@ def create_pref_window():
     pref_win.transient(master)
     pref_win.grab_set()
 
-    file_info_pane = tk.LabelFrame(pref_win, text="File Info")
-    user_info_pane = tk.LabelFrame(pref_win, text="User Info")
-    etc_info_pane = tk.LabelFrame(pref_win, text="Etc Info")
+    file_info_pane = tk.LabelFrame(pref_win, text=_("File Info"))
+    user_info_pane = tk.LabelFrame(pref_win, text=_("User Info"))
+    etc_info_pane = tk.LabelFrame(pref_win, text=_("Etc Info"))
 
     file_info_pane.pack(side=tk.TOP, fill=tk.X)
     user_info_pane.pack(side=tk.TOP, fill=tk.X)
@@ -61,11 +64,11 @@ def create_pref_window():
 
     gen_var = tk.StringVar(file_info_pane)
     gen_var.set(g_config['FILE']['GenerationFilePath'])
-    gen_label = tk.Label(file_info_pane, text="Generation File Path:")
+    gen_label = tk.Label(file_info_pane, text=_("Generation File Path:"))
     gen_label.grid(column=0, row=0, sticky='W')
     gen_entry = tk.Entry(file_info_pane, textvariable=gen_var)
     gen_entry.grid(column=0, row=1, sticky='WE')
-    gen_button = tk.Button(file_info_pane, text="Change", command=lambda: directory_select(gen_var))
+    gen_button = tk.Button(file_info_pane, text=_("Change"), command=lambda: directory_select(gen_var))
     gen_button.grid(column=1, row=1, sticky='WE')
     gen_separator = ttk.Separator(file_info_pane, orient='horizontal')
     gen_separator.grid(row=2,columnspan=2, stick='WE')
@@ -73,30 +76,30 @@ def create_pref_window():
 
     save_var = tk.StringVar(file_info_pane)
     save_var.set(g_config['FILE']['SaveFilePath'])
-    save_label = tk.Label(file_info_pane, text="Save File Path:")
+    save_label = tk.Label(file_info_pane, text=_("Save File Path:"))
     save_label.grid(column=0, row=3, sticky='W')
     save_entry = tk.Entry(file_info_pane, textvariable=save_var)
     save_entry .grid(column=0, row=4, sticky='WE')
-    save_button = tk.Button(file_info_pane, text="Change", command=lambda: directory_select(save_var))
+    save_button = tk.Button(file_info_pane, text=_("Change"), command=lambda: directory_select(save_var))
     save_button.grid(column=1, row=4, sticky='E')
 
     name_var = tk.StringVar(user_info_pane)
     name_var.set(g_config['USER']['Name'])
-    name_label = tk.Label(user_info_pane, text="Name:")
+    name_label = tk.Label(user_info_pane, text=_("Name:"))
     name_label.grid(column=0, row=0, sticky='WE')
     name_entry = tk.Entry(user_info_pane, textvariable=name_var)
     name_entry.grid(column=1, row=0, sticky='WE')
 
     pos_var = tk.StringVar(user_info_pane)
     pos_var.set(g_config['USER']['Position'])
-    pos_label = tk.Label(user_info_pane, text="Position:")
+    pos_label = tk.Label(user_info_pane, text=_("Position:"))
     pos_label.grid(column=0, row=1, sticky='WE')
     pos_entry = tk.Entry(user_info_pane, textvariable=pos_var)
     pos_entry.grid(column=1, row=1, sticky='WE')
 
     depart_var = tk.StringVar(user_info_pane)
     depart_var.set(g_config['USER']['Department'])
-    depart_label = tk.Label(user_info_pane, text="Department:")
+    depart_label = tk.Label(user_info_pane, text=_("Department:"))
     depart_label.grid(column=0, row=2, sticky='WE')
     depart_entry = tk.Entry(user_info_pane, textvariable=depart_var)
     depart_entry.grid(column=1, row=2, sticky='WE')
@@ -105,7 +108,7 @@ def create_pref_window():
 
     lang_var = tk.StringVar(etc_info_pane)
     lang_var.set(g_config['ETC']['Language'])
-    lang_label = tk.Label(etc_info_pane, text="Language:")
+    lang_label = tk.Label(etc_info_pane, text=_("Language:"))
     lang_label.grid(column=0, row=0, sticky='WE')
     lang_choices = {'ko_KR', 'C'}
     lang_choices = sorted(lang_choices)
@@ -113,8 +116,8 @@ def create_pref_window():
     lang_pop.grid(column=1, row=0, sticky='WE')
 
 
-    ok_button = tk.Button(pref_win, text="OK", command=lambda: ok_pref(pref_win))
-    cancel_button = tk.Button(pref_win, text="Cancel", command=lambda: cancel_pref(pref_win))
+    ok_button = tk.Button(pref_win, text=_("OK"), command=lambda: ok_pref(pref_win))
+    cancel_button = tk.Button(pref_win, text=_("Cancel"), command=lambda: cancel_pref(pref_win))
     ok_button.pack(side=tk.TOP, fill=tk.X)
     cancel_button.pack(side=tk.TOP, fill=tk.X)
 
@@ -137,7 +140,7 @@ def read_config():
 
 def read_csv(month):
     global df
-    filename_f = '{month}M_zanup_{department}_{name}.csv'
+    filename_f = _('{month}M_zanup_{department}_{name}.csv')
     filename = filename_f.format(month=month, department=g_config['USER']['Department'], name=g_config['USER']['Name'])
     print(filename)
     my_file = Path(g_config['FILE']['SaveFilePath'] + filename)
@@ -151,7 +154,7 @@ def read_csv(month):
 
 def save_df():
     print("save")
-    filename_f = '{month}M_zanup_{department}_{name}.csv'
+    filename_f = _('{month}M_zanup_{department}_{name}.csv')
     filename = filename_f.format(month=g_month, department=g_config['USER']['Department'], name=g_config['USER']['Name'])
     print(filename)
     df.to_csv(filename, index=False)
@@ -228,7 +231,7 @@ def generate_xl():
     sheet["K"+str(index+7+1)] = "=SUM(K7:K" + str(index+7) + ")"
     sheet["K"+str(index+7+2)] = "=SUM(K" + str(index+7+1) + ")"
 
-    filename_f = '{month}M_zanup_{department}_{name}.xlsx'
+    filename_f = _('{month}M_zanup_{department}_{name}.xlsx')
     filename = filename_f.format(month=g_month, department=g_config['USER']['Department'], name=g_config['USER']['Name'])
     print(filename)
 
@@ -239,14 +242,14 @@ def insert_row():
     global df
 
     if len(desc_text.get("1.0", 'end-1c')) == 0:
-        msg.showerror("New Entry Insertion", "Please, Insert description!!!")
+        msg.showerror(_("New Entry Insertion"), _("Please, Insert description!!!"))
         return
 
     for index, df_row in df.iterrows():
         print(date_var.get())
         print(df_row['date'])
         if date_var.get() == df_row['date']:
-            msg.showerror("New Entry Insertion", "Duplicated Date Detected!!!")
+            msg.showerror(_("New Entry Insertion"), _("Duplicated Date Detected!!!"))
             return
 
 
@@ -300,7 +303,7 @@ def cal_call(eventObject):
     print (date.strftime('%a'))
     print(eventObject)
     date_var.set(date)
-    week_var.set(date.strftime('%a'))
+    week_var.set(gettext.gettext(date.strftime('%a')))
 
 def exit_():
     master.quit()
@@ -316,6 +319,8 @@ def directory_select(var):
     var.set(path)
 
 
+ko = gettext.translation('base', localedir='./', languages=['ko'])
+ko.install()
 read_config()
 today = date.today()
 g_month = int(today.strftime('%m'))
@@ -324,34 +329,36 @@ print(g_month)
 read_csv(g_month)
 
 master = tk.Tk()
-master.title("ZanUp")
+master.title(_("ZanUp"))
+
+dummy = (_("Sun"), _("Mon"), _("Tue"), _("Wed"), _("Thu"), _("Fri"), _("Sat"))
 
 menu_bar = tk.Menu(master, relief="flat")
 
 file_menu = tk.Menu(menu_bar, tearoff=0)
-file_menu.add_command(label="Open", command=file_open)
-file_menu.add_command(label="Save")
-file_menu.add_command(label="Generation")
+file_menu.add_command(label=_("Open"), command=file_open)
+file_menu.add_command(label=_("Save"))
+file_menu.add_command(label=_("Generation"))
 file_menu.add_separator()
-file_menu.add_command(label="Exit", command=exit_)
-menu_bar.add_cascade(label="File", menu=file_menu)
+file_menu.add_command(label=_("Exit"), command=exit_)
+menu_bar.add_cascade(label=_("File"), menu=file_menu)
 
 setting_menu = tk.Menu(menu_bar, tearoff=0)
-setting_menu.add_command(label="Preference", command=create_pref_window)
-menu_bar.add_cascade(label="Setting", menu=setting_menu)
+setting_menu.add_command(label=_("Preference"), command=create_pref_window)
+menu_bar.add_cascade(label=_("Setting"), menu=setting_menu)
 
 help_menu = tk.Menu(menu_bar, tearoff=0)
-help_menu.add_command(label="Help")
-help_menu.add_command(label="About")
-menu_bar.add_cascade(label="Help", menu=help_menu)
+help_menu.add_command(label=_("Help"))
+help_menu.add_command(label=_("About"))
+menu_bar.add_cascade(label=_("Help"), menu=help_menu)
 
 master.config(menu=menu_bar)
 
 upper_pane = tk.PanedWindow(master)
 #bottom_pane =  tk.PanedWindow(master)
-bottom_pane =  tk.LabelFrame(master, text="Work List", font="Arial 20")
-bottom_pane.configure(text="List of " + str(g_month)) 
-insert_pane = tk.LabelFrame(upper_pane, text='New Entry')
+bottom_pane =  tk.LabelFrame(master, text=_("Work List"), font="Arial 20")
+bottom_pane.configure(text=_("List of ") + str(g_month) + _(" M")) 
+insert_pane = tk.LabelFrame(upper_pane, text=_("New Entry"))
 
 upper_pane.pack(side=tk.TOP, fill=tk.BOTH)
 bottom_pane.pack(side=tk.TOP, fill=tk.BOTH, expand=tk.YES)
@@ -375,7 +382,7 @@ date_label = tk.Label(insert_pane, textvariable=date_var)
 date_label.grid(row=0, column=0, sticky='W', padx=10)
 
 week_var = tk.StringVar(insert_pane)
-week_var.set(calendar.selection_get().strftime('%a'))
+week_var.set(gettext.gettext(calendar.selection_get().strftime('%a')))
 week_label = tk.Label(insert_pane, textvariable=week_var)
 week_label.grid(row=0, column=1, sticky='W')
 #start_label = tk.Label(insert_pane, text="09:00")
@@ -411,10 +418,10 @@ desc_text = tk.Text(insert_pane, height=2, width=50)
 desc_text.grid(row=1, columnspan=6, sticky='WE')
 
 
-insert_button = tk.Button(upper_pane, text='Insert', width=30, command=insert_row)
-delete_button = tk.Button(upper_pane, text='Delete', width=30, command=delete_row)
-done_button = tk.Button(upper_pane, text='Generate', width=30, command=generate_xl)
-save_button = tk.Button(upper_pane, text='Save', width=30, command=save_df)
+insert_button = tk.Button(upper_pane, text=_('Insert'), width=30, command=insert_row)
+delete_button = tk.Button(upper_pane, text=_('Delete'), width=30, command=delete_row)
+done_button = tk.Button(upper_pane, text=_('Generate'), width=30, command=generate_xl)
+save_button = tk.Button(upper_pane, text=_('Save'), width=30, command=save_df)
 
 insert_button.pack(fill=tk.X)
 delete_button.pack(fill=tk.X)
@@ -429,22 +436,22 @@ treeview.column("#0", width=50, minwidth=50, stretch=False, anchor="w")
 treeview.heading("#0", text="#")
 
 treeview.column("#1", width=100, minwidth=100, stretch=False, anchor="center")
-treeview.heading("Date", text="Date")
+treeview.heading("Date", text=_("Date"))
 
 treeview.column("#2", width=50, minwidth=50, stretch=False, anchor="center")
-treeview.heading("Week", text="Week")
+treeview.heading("Week", text=_("Week"))
 
 treeview.column("#3", width=50, minwidth=50, stretch=False, anchor="center")
-treeview.heading("Start", text="Start")
+treeview.heading("Start", text=_("Start"))
 
 treeview.column("#4", width=50, minwidth=50, stretch=False, anchor="center")
-treeview.heading("End", text="End")
+treeview.heading("End", text=_("End"))
 
 treeview.column("#5", width=50, minwidth=50, stretch=False, anchor="center")
-treeview.heading("Rate", text="Rate")
+treeview.heading("Rate", text=_("Rate"))
 
 treeview.column("#6", width=300, anchor="w")
-treeview.heading("Description", text="Description")
+treeview.heading("Description", text=_("Description"))
 treeview.pack(side='left', fill=tk.BOTH, expand=tk.YES)
 
 ttk.Style().configure('Treeview',rowheight=30)
