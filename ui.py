@@ -26,6 +26,32 @@ g_department = "1sil"
 g_name = "cklee"
 global df
 
+def read_config():
+    my_file = Path("./config.ini")
+    if my_file.is_file():
+        print("config file already exist")
+        g_config.read("./config.ini")
+    else:
+        print("config file not exist")
+        #config = configparser.ConfigParser()
+        g_config['FILE'] = {'GenerationFilePath': './',
+                             'SaveFilePath': './'}
+        g_config['USER'] = {'Name': 'Hong gildong',
+                             'Position': 'bastard',
+                             'Department': 'Korea'}
+        g_config['ETC'] = {'Language': 'C'}
+        with open('config.ini', 'w') as configfile:
+            g_config.write(configfile)
+
+read_config()
+
+if g_config['ETC']['Language'] == 'C':
+    _ = lambda s: s
+else:
+    ko = gettext.translation('base', localedir='./', languages=['ko'])
+    ko.install()
+    
+
 
 
 def ok_pref(pref_win):
@@ -121,22 +147,6 @@ def create_pref_window():
     ok_button.pack(side=tk.TOP, fill=tk.X)
     cancel_button.pack(side=tk.TOP, fill=tk.X)
 
-def read_config():
-    my_file = Path("./config.ini")
-    if my_file.is_file():
-        print("config file already exist")
-        g_config.read("./config.ini")
-    else:
-        print("config file not exist")
-        #config = configparser.ConfigParser()
-        g_config['FILE'] = {'GenerationFilePath': './',
-                             'SaveFilePath': './'}
-        g_config['USER'] = {'Name': 'Hong gildong',
-                             'Position': 'bastard',
-                             'Department': 'Korea'}
-        g_config['ETC'] = {'Language': 'C'}
-        with open('config.ini', 'w') as configfile:
-            g_config.write(configfile)
 
 def read_csv(month):
     global df
@@ -303,7 +313,8 @@ def cal_call(eventObject):
     print (date.strftime('%a'))
     print(eventObject)
     date_var.set(date)
-    week_var.set(gettext.gettext(date.strftime('%a')))
+    #week_var.set(gettext.gettext(date.strftime('%a')))
+    week_var.set(_(date.strftime('%a')))
 
 def exit_():
     master.quit()
@@ -319,9 +330,10 @@ def directory_select(var):
     var.set(path)
 
 
-ko = gettext.translation('base', localedir='./', languages=['ko'])
-ko.install()
-read_config()
+#ko = gettext.translation('base', localedir='./', languages=['ko'])
+#ko = gettext.translation('base', localedir='./', languages=['C'])
+#ko.install()
+#read_config()
 today = date.today()
 g_month = int(today.strftime('%m'))
 print(g_month)
@@ -382,7 +394,8 @@ date_label = tk.Label(insert_pane, textvariable=date_var)
 date_label.grid(row=0, column=0, sticky='W', padx=10)
 
 week_var = tk.StringVar(insert_pane)
-week_var.set(gettext.gettext(calendar.selection_get().strftime('%a')))
+#week_var.set(gettext.dgettext('base', calendar.selection_get().strftime('%a')))
+week_var.set(_(calendar.selection_get().strftime('%a')))
 week_label = tk.Label(insert_pane, textvariable=week_var)
 week_label.grid(row=0, column=1, sticky='W')
 #start_label = tk.Label(insert_pane, text="09:00")
@@ -474,7 +487,7 @@ filename = "sample.xlsx"
 book = xl.load_workbook(filename)
 sheet = book.worksheets[0]
 
-read_config()
+#read_config()
 
 tk.mainloop()
 
