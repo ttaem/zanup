@@ -155,11 +155,13 @@ def read_csv(month):
     filename_f = _('{month}M_zanup_{department}_{name}.csv')
     filename = filename_f.format(month=month, department=g_config['USER']['Department'], name=g_config['USER']['Name'])
     print(filename)
-    my_file = Path(g_config['FILE']['SaveFilePath'] + filename)
+    my_file = Path(g_config['FILE']['SaveFilePath'] + "/" + filename)
+    print(g_config['FILE']['SaveFilePath'])
     if my_file.is_file():
         df = pd.read_csv(my_file)
     else:
         df = pd.DataFrame(columns=['date', 'week', 'start', 'end', 'rate', 'desc'])
+    print(df)
 
 
 
@@ -217,7 +219,7 @@ def generate_xl():
         sheet["H"+str(index+7)] = df_row['end']
         sheet["I"+str(index+7)] = ""
         sheet["J"+str(index+7)] = df_row['rate']
-        sheet["K"+str(index+7)] = "=IF(J"+str(index+7)+"=\"A\",15000,IF(J"+str(index+7)+"=\"B\",20000,IF(J"+str(index+7)+"=\"C\",30000,IF(J"+str(index+7)+"=\"D\",40000,''))))"
+        sheet["K"+str(index+7)] = "=IF(J"+str(index+7)+"=\"A\",15000,IF(J"+str(index+7)+"=\"B\",20000,IF(J"+str(index+7)+"=\"C\",30000,IF(J"+str(index+7)+"=\"D\",40000,\"\"))))"
         sheet["L"+str(index+7)] = df_row['desc']
 
     for index, df_row in df.iterrows():
