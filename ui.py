@@ -52,6 +52,8 @@ else:
     ko.install()
     
 
+def lang_changed(event):
+    msg.showinfo(_("Language is changed"), _("If you changed language, You need to exit program to apply"))
 
 
 def ok_pref(pref_win):
@@ -138,7 +140,7 @@ def create_pref_window():
     lang_label.grid(column=0, row=0, sticky='WE')
     lang_choices = {'ko_KR', 'C'}
     lang_choices = sorted(lang_choices)
-    lang_pop = tk.OptionMenu(etc_info_pane, lang_var, *lang_choices)
+    lang_pop = tk.OptionMenu(etc_info_pane, lang_var, *lang_choices, command=lang_changed)
     lang_pop.grid(column=1, row=0, sticky='WE')
 
 
